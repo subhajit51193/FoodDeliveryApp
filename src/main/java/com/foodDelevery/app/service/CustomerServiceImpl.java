@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.foodDelevery.app.dto.CustomerDTO;
 import com.foodDelevery.app.entity.Address;
+import com.foodDelevery.app.entity.Cart;
 import com.foodDelevery.app.entity.Customer;
 import com.foodDelevery.app.exception.CustomerNotFoundException;
 import com.foodDelevery.app.helper.Helper;
 import com.foodDelevery.app.repository.AddressRepository;
+import com.foodDelevery.app.repository.CartRepository;
 import com.foodDelevery.app.repository.CustomerRespository;
 
 @Service
@@ -23,6 +25,9 @@ public class CustomerServiceImpl implements CustomerService{
 	
 	@Autowired
 	private AddressRepository addressRepository;
+	
+	@Autowired
+	private CartRepository cartRepository;
 	
 	@Autowired
 	private Helper helper;
@@ -62,6 +67,13 @@ public class CustomerServiceImpl implements CustomerService{
 			//Adding customers and address into each other's list
 			address.getCustomers().add(customer);
 			customer.getAddresses().add(address);
+			
+			//creating a cart and set with customer and vice versa
+			Cart cart = new Cart();
+			cart.setCart_id(helper.createRandomString());
+			cart.setCustomer(customer);
+			customer.setCart(cart);
+			cartRepository.save(cart);
 		}
 		return customerRespository.save(customer);
 	}
